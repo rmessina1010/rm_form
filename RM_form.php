@@ -31,7 +31,7 @@
 		protected $is_valid 	= false;
 		protected $method 		= '';
 		protected $action 		= '';
-		protected $pages 		= '';
+		protected $pages 		= 'default';
 		protected $form_data 	= array();
 		protected $is_sub		= false;
 		protected $is_nav		= false;
