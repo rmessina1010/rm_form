@@ -1,5 +1,5 @@
 # RMJS_lib
-A PHP class that generates and manages the life cycle of a HTML from.
+An extensible PHP class that generates and manages the life cycle of a HTML from.
 
 Life Cycle Steps:
 1) Check Submission
