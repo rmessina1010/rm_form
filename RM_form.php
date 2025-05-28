@@ -20,6 +20,12 @@
 		display: none;
 	}
 </style><?
+	function state_o(){
+		$states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+		$state_options ="\n";
+		foreach ($states as $state){  $state_options.= "<option value=\"$state\">$state</option>\n";}
+		return $state_options;
+	}
 	/**
 	* HTML/PHP form
 	*/
@@ -31,7 +37,7 @@
 		protected $is_valid 	= false;
 		protected $method 		= '';
 		protected $action 		= '';
-		protected $pages 		= 'default';
+		protected $pages 		= '';
 		protected $form_data 	= array();
 		protected $is_sub		= false;
 		protected $is_nav		= false;
@@ -45,7 +51,7 @@
 		protected $sub_html		= '';
 		
 		
-		function __construct($sub, $args = array()){
+		function RM_form($sub, $args = array()){
 			foreach($args  as $possible_attr_key => $att_val){
 				if (isset($this->attr_keys[$possible_attr_key])){ 
 					$this->attrs[$this->attr_keys[$possible_attr_key]] = $att_val; 
@@ -57,7 +63,6 @@
 			$this->method = isset($args['mtd']) ? strtoupper($args['mtd']) : 'GET';
 			$this->sub =$sub;
 			if (isset($arg['navs']) && is_array($arg['navs'])){ $this->navs = $arg['navs'];}
-			$this->pages =  is_array($this->pages) ? is_array($this->pages) : [$this->pages];
 			$this->pg_ct =count($this->pages);
 			$this->checksub('xx');
  		}
@@ -68,14 +73,13 @@
 		}
 
 		function form_body_preprocess($html){
-			if (method_exists($this, $html)) { return $this->{$html}();}
-			if (isset($this->{$html}) && is_string($this->{$html})) {  return $this->{$html}; }
-			return  $html;
+			return $this->{$html}();
 		}
 		
 		function form_body(){
 			if (is_string($this->pages)) { return $this->form_body_preprocess($this->pages);}
 			if (is_array($this->pages) &&  $this->on_pg > -1 && $this->on_pg < $this->pg_ct) { return $this->form_body_preprocess($this->pages[$this->on_pg]);}
+			return '';
 		}
 
 		function form_attrs(){
@@ -83,6 +87,7 @@
 			foreach ($this->attrs as $attr_key=> $attr_val){ $attrs.=" $attr_key=\"".$attr_val.'"'; }
 			return $attrs;
 		}
+	
 		protected function run_validate(){
 			$this->errs = array();
 			$this->validate();
@@ -160,9 +165,126 @@
 	
 	}
 	
-	$f = new RM_form('subbie');
-	$f->run();
-  
+class myForm extends RM_form{
+	public 	$pages 		= ['pageit','formit'];
+	public  $sub_html	= '<input type="submit" name="submit" id="submit" value="Log In Here"/>';
+		
+	function validate(){
+ 		if (!$this->methodVars['Pass']){ $this->setErr('Pass', 'A password is required'); }
+		if (!$this->methodVars['Uname']){ $this->setErr('Uname', 'A user name is required'); }
+ 	  	if ($this->methodVars['Pass'] != $this->methodVars['Uname']){ { $this->setErr('Opps', 'hacker!!!'); }}
+ 	  	for ($i=1; $i<5; $i++){
+	 	  if (!$this->methodVars['input'.$i]){ { $this->setErr('input'.$i, 'you are missing data at input'.$i); }}
+ 		}
+ 	  	if ($this->methodVars['input2'] != '2' ){ { $this->setErr('input2', 'must equal 2', '; '); }}
+	}
+	protected function report($field, $tag="span", $attr="class=\"error\""){ return  isset($this->errs[$field]) ? "<$tag $attr>".$this->errs[$field]."</$tag>" :"";}
+
+	function formit(){
+	 	$resub =  $this->is_sub ? '<h2>You Have Submitted the form</h2>' : '';
+	 	$valid =  $this->is_sub?  "<p>The Data is:". ($this->is_valid ? 'Valid' : 'Invalid')."</p>" :'';
+	 	$processed =  $this->is_sub ? '<h3> '.($this->is_processed ? 'The form was processed successfully' : 'Attempt to process failed'.(!$this->is_valid ? ' due to invalid data':'').'!').'</h3>' : '';
+	 	$b = $c = '';
+		for ($i=1; $i<5; $i++){
+	 		$b.="<lable>for input-$i</label><input id=\"input$i\" name=\"input$i\" {$this->get_value('input'.$i)}/>".$this->report('input'.$i)."<br>\n";
+		}
+		for ($i=1; $i<6; $i++){
+	 		$c.="<option value=\"val$i\" {$this->is_selected('selectme', 'val'.$i)}/>value of $i</option>\n";
+		}
+		return <<<TEXT
+		{$this->navigation_h()}
+		$resub
+		$valid
+		$processed
+        <div>
+        	<label>User Name: </label>
+        	<input type="text" name="Uname" id="Uname" placeholder="Username" {$this->get_value('Uname')} />{$this->report('Uname')}
+        </div>     
+        <div>
+        	<label>Password: </label> 
+        	<input type="Password" name="Pass" id="Pass" placeholder="Password" {$this->get_value('Pass')} />
+        </div>
+        {$this->report('Opps', 'div')}
+        <div>
+        $b
+        </div>
+        <div>
+	        <label>A Dropdown</label>
+	        <select name ="selectme">
+	        $c
+	        </select>
+	    </div>
+        {$this->navigation_b()}     
+        <div><input type="checkbox" id="check" name="check" {$this->is_checked('check')}> <span>Remember me</span></div>
+        <div>Forgot <a href="#">Password</a> </div>   
+TEXT;
+	}
+	
+	function pageit(){
+		$state_o= 'state_o';
+  		return <<<TEXT
+		{$this->navigation_h()}
+        <div><label>Address: </label>
+        	<input type="text" name="Uname" id="Uname" placeholder="Username" {$this->get_value('Uname')} />{$this->report('Uname')}
+        </div>     
+        <div>
+        	<label>City: </label> 
+        	<input type="Password" name="Pass" id="Pass" placeholder="Password" {$this->get_value('Pass')} />
+        </div>
+        {$this->report('Opps', 'div')}
+        <div>
+        $b
+        </div>
+        <div>
+	        <label>State: </label>
+	        <select name ="selectme"> {$state_o()}</select>
+	    </div>
+	    {$this->navigation_b()}
+        <div><input type="checkbox" id="check" name="check" {$this->is_checked('check')}> <span>Remember me</span></div>
+        <div>Forgot <a href="#">Password</a> </div>   
+TEXT;
+	}
+	
+	function navigation_h($b='<div>Page ',$m=' of ',$a='</div> '){
+		return ( is_array($this->pages)) ? $b.($this->on_pg+1).$m.$this->pg_ct.$a :'';
+	}
+	
+	function navigation_b($sub=false){
+		$nav = '';
+		if ($this->on_pg > 0){ 
+			$nav.= '<button type="submit" name="navform" id="back" value="'.($this->on_pg - 1).'"><< Previous</button>';
+ 		}
+		if ($this->on_pg+1 == $this->pg_ct){ 
+			$nav.=($sub ? $sub :  $this->sub_html);
+		}else if ($this->on_pg < $this->pg_ct){
+			$i = $this->on_pg + 1;
+			$nav.='<button type="submit" name="navform" id="next" value="'.($this->on_pg + 1).'">Next >></button>';
+ 		}
+		return $nav ? "<div>$nav</div>": "";
+	}
+	
+	function post_process(){
+		echo '<h3> ** '.($this->is_processed ? 'The form was processed successfully' : 'Attempt to process failed!').'</h3>' ;
+	}
+	
+	function process(){
+		var_dump($this->methodVars);
+		return true;
+	}
+}
+	
+$_GET['submit']='Log In Here';
+$_GET['Pass']='Log In Here';
+$_GET['Uname']='Log In Here';
+$_GET['input1']='Log In Here';
+$_GET['input3']='Log In Here';
+// $_GET['input2']='2';
+$_GET['input4']='Log In Here';
+$_GET['check']='';
+$_GET['selectme']='val3';
+$form = new myForm( 'submit',array('mtd'=>'get'));
+$form->run();
+
 ?>
 
 
