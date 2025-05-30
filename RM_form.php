@@ -36,6 +36,7 @@
 		protected $attr_keys	= ["char"=>"accept-charset", "act"=>"action", "auto"=>"autocomplete", "class"=>"class","enc"=>"enctype", "id"=>"id", 										"mtd"=>"method", "name"=>"name", "noval"=> "novalidate", "tgt"=>"target", "style"=>"style"];
 		protected $attrs		= array();
 		protected $form_name	= '';
+		protected $form_data	= array();
 		protected $css			= '';
 		protected $is_css_url 	= false;
 		protected $pg_ct 		= 0;
@@ -110,7 +111,7 @@
 		protected function run_validate(){
 			$this->errs = array();
  			$this->set_methodVars();
-			$this->on_pg = is_array($this->pages) ? $this->pages[$_SESSION[$this->form_name]['current_index']] : $this->on_pg;
+			$this->on_pg = is_array($this->pages) ?  $_SESSION[$this->form_name]['current_index'] : $this->on_pg;
 			$this->validate();
 			$this->is_valid = (count($this->errs) < 1);
 			// store data
@@ -161,10 +162,7 @@
 		}
 		
 		function retrieve_var($field){
-			$val = null; 
-			if (!is_array($this->pages) && isset($this->methodVars[$field])){ $val = $this->methodVars[$field] ;}
-			if (is_array($this->pages) && isset($this->methodVars[$this->pages[$this->on_pg]][$field])){ $val = $this->methodVars[$this->pages[$this->on_pg]][$field] ;}
-			return $val;
+ 			return isset($this->methodVars[$field]) ? $this->methodVars[$field] : null ;
 		}
 		
 		function get_value($field, $b='value="',$a='"'){
@@ -192,8 +190,27 @@
 		}
 		
 		protected function navigate(){
+		    $this->persist_data();
 			$this->on_pg = $_SESSION[$this->form_name]['current_index'];
+			$this->load_data();
 		}
+		
+		protected function persist_data(){
+			if ( is_array($this->pages)){
+				$_SESSION[$this->form_name]['data'][$this->pages[$this->on_pg]] = $this->methodVars;
+			}
+			else{ $_SESSION[$this->form_name]['data']  = $this->methodVars; }
+ 		}
+ 		
+		protected function load_data(){
+			$this->methodVars =  array();
+			if ( is_array($this->pages) && isset($_SESSION[$this->form_name]['data'][$this->pages[$this->on_pg]])){
+				$this->methodVars = $_SESSION[$this->form_name]['data'][$this->pages[$this->on_pg]];
+			}
+			if(isset($_SESSION[$this->form_name]['data']) && !is_array($this->pages)){
+				$this->methodVars = $_SESSION[$this->form_name]['data'];
+			}
+  		}
 		
 		function run($supress=false){
 			if ($this->checksub()){
@@ -208,16 +225,10 @@
 									if ($this->do_post === "only") { return;}
 								}
 							}
-							// is nav\
-							if ($this->is_nav && !$this->is_sub ){
-								$this->navigate();
-							}
+ 							$this->navigate();
 						}
 					}
-					else if ($this->is_nav && $this->tg_index < $_SESSION[$this->form_name]['current_index'])){
-						$this->navigate();
-					}
-				}
+ 				}
 			}; 			
 			if (!$supress){ echo $this->generate();}
 		}
@@ -337,5 +348,3 @@ $form->run();
 //todo:
 //restrict navigation and validity to page/
 ?>
-
-
