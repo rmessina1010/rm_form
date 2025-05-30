@@ -44,11 +44,11 @@
 		protected $method 		= '';
 		protected $action 		= '';
 		protected $pages 		= '';
-		protected $form_data 	= array();
 		protected $is_sub		= false;
 		protected $is_nav		= false;
 		protected $is_pg_valid	= false;
 		protected $navs			= array();
+		protected $tg_index	= null;
 		protected $is_processed	= false;
 		protected $sub 			= '';
 		protected $errs 		= array();
@@ -61,7 +61,7 @@
 		function __construct($sub, $args = array()){
 			if (!headers_sent() && session_status() === PHP_SESSION_NONE) { session_start(); }
 		
-
+				
 			foreach($args  as $possible_attr_key => $att_val){
 				if (isset($this->attr_keys[$possible_attr_key])){ 
 					$this->attrs[$this->attr_keys[$possible_attr_key]] = $att_val; 
@@ -75,6 +75,9 @@
 			if (isset($args['navs']) && is_array($args['navs'])){ $this->navs = $args['navs']; }
 			$this->pg_ct =count($this->pages);
 			$this->form_name = isset($this->attrs['name']) ?  $this->attrs['name'] : 'dflt';
+			$_SESSION[$this->form_name]['data']			=    array();
+			$_SESSION[$this->form_name]['current_index']= is_array($this->pages) ? 0 :  null;
+			// $_SESSION[$this->form_name]['prev_pg']		=    null;
   		}
   		
   		protected function style(){
@@ -106,8 +109,11 @@
 	
 		protected function run_validate(){
 			$this->errs = array();
+ 			$this->set_methodVars();
+			$this->on_pg = is_array($this->pages) ? $this->pages[$_SESSION[$this->form_name]['current_index']] : $this->on_pg;
 			$this->validate();
 			$this->is_valid = (count($this->errs) < 1);
+			// store data
 			return $this->is_valid;
 		}
 		
@@ -125,45 +131,25 @@
 
 		
 		function checksub($with = null ){
- 			$this->is_sub =array_key_exists($this->sub, $GLOBALS['_'.$this->method]) && ( !$with ||  $GLOBALS['_'.$this->method][$this->sub] === $with) ;
-  			foreach ($this->navs as $navkey){
- 	 			$this->is_nav = false;
+ 			$this->is_sub 	= array_key_exists($this->sub, $GLOBALS['_'.$this->method]) && ( !$with ||  $GLOBALS['_'.$this->method][$this->sub] === $with) ;
+ 			$this->is_nav 	= false;
+ 			$this->tg_index = null;
+  			foreach ($this->navs as  $navkey){
   				if (array_key_exists($navkey, $GLOBALS['_'.$this->method])){
-	  				$this->is_nav = $navkey;
+	  				$this->is_nav 		= $navkey;
+	  				$this->tg_index 	= $this->derive_on_pg();
  	  				break;
   				}
  			}
- 			$pg = false;
- 			if ($this->is_nav !== false ) {
- 				$pgs = $this->derive_on_pg();
-	 			$this->on_pg=  $pgs[0];
-	 			$pg = isset($pgs[1])? $pgs[1] : $pgs[0];
-	 		}
- 			$this->set_methodVars($pg);
  			return ($this->is_sub || $this->is_nav);
    		}
 	
-   		private  function set_methodVars($pg=false){ //careful here!!
-	   		if (isset($_SESSION['rm_form_'.$this->form_name])){ 
-		   		$this->methodVars = $_SESSION['rm_form_'.$this->form_name]; 
-		   	}
- 			if (is_array($this->pages) && is_string($pg)){ 
-	 			$this->methodVars[$pg] = $GLOBALS['_'.$this->method];
-	 		}
- 			else{ 
-	 			$this->methodVars = $GLOBALS['_'.$this->method];
- 			}
- 			$_SESSION['rm_form_'.$this->form_name] = $this->methodVars;
+   		private  function set_methodVars(){  
+		   	$this->methodVars = $GLOBALS['_'.$this->method];
    		}
    		
-   		private  function set_methodVar($field,$val=''){ //careful here!!
- 			if (is_array($this->pages)){ 
-	 			$this->methodVars[$this->pages[$this->on_pg]][$field] = $val;
-	 		}
- 			else{ 
-	 			$this->methodVars[$field] =$val;
- 			}
- 			$_SESSION['rm_form_'.$this->form_name] = $this->methodVars;
+   		private  function set_methodVar($field,$val=''){
+ 			$this->methodVar[$field] = $val;
    		}
 	
    		
@@ -205,13 +191,31 @@
 			return explode('/', $full);
 		}
 		
+		protected function navigate(){
+			$this->on_pg = $_SESSION[$this->form_name]['current_index'];
+		}
+		
 		function run($supress=false){
 			if ($this->checksub()){
-				if (!$this->is_processed && $this->run_validate() && $this->is_sub){
-					$this->is_processed = $this->process();
-					if ($this->do_post) {
-						$this->post_process();
-						if ($this->do_post === "only") { return;}
+				if (!$this->is_processed){
+					if ( $this->is_sub || ($this->is_nav && $this->tg_index >= $_SESSION[$this->form_name]['current_index'])){
+						$this->run_validate();
+						if ($this->is_valid){
+							if ($this->is_sub){
+								$this->is_processed = $this->process();
+								if ($this->do_post) {
+									$this->post_process();
+									if ($this->do_post === "only") { return;}
+								}
+							}
+							// is nav\
+							if ($this->is_nav && !$this->is_sub ){
+								$this->navigate();
+							}
+						}
+					}
+					else if ($this->is_nav && $this->tg_index < $_SESSION[$this->form_name]['current_index'])){
+						$this->navigate();
 					}
 				}
 			}; 			
@@ -226,14 +230,14 @@ class myForm extends RM_form{
 		
 	function validate(){
 		$current_pg = $this->pages[$this->on_pg];
- 		if (!$this->methodVars[$current_pg]['Pass']){ $this->setErr('Pass', 'A password is required'); }
-		if (!$this->methodVars[$current_pg]['Uname']){ $this->setErr('Uname', 'A user name is required'); }
- 	  	if ($this->methodVars[$current_pg]['Pass'] != $this->methodVars[$current_pg]['Uname']){ { $this->setErr('Opps', 'hacker!!!'); }}
+ 		if (!$this->methodVars['Pass']){ $this->setErr('Pass', 'A password is required'); }
+		if (!$this->methodVars['Uname']){ $this->setErr('Uname', 'A user name is required'); }
+ 	  	if ($this->methodVars['Pass'] != $this->methodVars['Uname']){ { $this->setErr('Opps', 'hacker!!!'); }}
  	  	if ($current_pg == 'formit'){
 	 	  	for ($i=1; $i<5; $i++){
-		 	  if (!$this->methodVars[$current_pg]['input'.$i]){ { $this->setErr('input'.$i, 'you are missing data at input'.$i); }}
+		 	  if (!$this->methodVars['input'.$i]){ { $this->setErr('input'.$i, 'you are missing data at input'.$i); }}
 	 		}
-	 	  	if ($this->methodVars[$current_pg]['input2'] != '2' ){ { $this->setErr('input2', 'must equal 2', '; '); }}
+	 	  	if ($this->methodVars['input2'] != '2' ){ { $this->setErr('input2', 'must equal 2', '; '); }}
 	 	}
 	}
 	protected function report($field, $tag="span", $attr="class=\"error\""){ return  isset($this->errs[$field]) ? "<$tag $attr>".$this->errs[$field]."</$tag>" :"";}
