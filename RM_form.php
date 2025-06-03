@@ -1,5 +1,6 @@
 <?php 
 	ini_set('display_errors', 1); 
+	session_start();  /// session
 ?> 
 <style>
  	form div, form p, form h2, form h3{
@@ -60,9 +61,8 @@
 		
 		
 		function __construct($sub, $args = array()){
-			if (!headers_sent() && session_status() === PHP_SESSION_NONE) { session_start(); }
-		
-				
+			// if (!headers_sent() && session_status() === PHP_SESSION_NONE) { session_start();  echo"!!!";}
+ 				
 			foreach($args  as $possible_attr_key => $att_val){
 				if (isset($this->attr_keys[$possible_attr_key])){ 
 					$this->attrs[$this->attr_keys[$possible_attr_key]] = $att_val; 
@@ -76,9 +76,15 @@
 			if (isset($args['navs']) && is_array($args['navs'])){ $this->navs = $args['navs']; }
 			$this->pg_ct =count($this->pages);
 			$this->form_name = isset($this->attrs['name']) ?  $this->attrs['name'] : 'dflt';
-			$_SESSION[$this->form_name]['data']			=    array();
-			$_SESSION[$this->form_name]['current_index']= is_array($this->pages) ? 0 :  null;
-			// $_SESSION[$this->form_name]['prev_pg']		=    null;
+			if (!isset($_SESSION[$this->form_name])){
+				$_SESSION[$this->form_name]['data']			=    array();
+				$_SESSION[$this->form_name]['current_index']= is_array($this->pages) ? 0 :  null;
+				// $_SESSION[$this->form_name]['prev_pg']		=    null;
+
+			}else{
+								var_dump($_SESSION[$this->form_name]);
+
+			}
   		}
   		
   		protected function style(){
@@ -111,7 +117,7 @@
 		protected function run_validate(){
 			$this->errs = array();
  			$this->set_methodVars();
-			$this->on_pg = is_array($this->pages) ?  $_SESSION[$this->form_name]['current_index'] : $this->on_pg;
+			// $this->on_pg = is_array($this->pages) ?  $_SESSION[$this->form_name]['current_index'] : $this->on_pg;
 			$this->validate();
 			$this->is_valid = (count($this->errs) < 1);
 			// store data
@@ -138,7 +144,7 @@
   			foreach ($this->navs as  $navkey){
   				if (array_key_exists($navkey, $GLOBALS['_'.$this->method])){
 	  				$this->is_nav 		= $navkey;
-	  				$this->tg_index 	= $this->derive_on_pg();
+	  				$this->tg_index 	= $this->derive_on_pg()[0];
  	  				break;
   				}
  			}
@@ -190,19 +196,21 @@
 		}
 		
 		protected function navigate(){
-		    $this->persist_data();
-			$this->on_pg = $_SESSION[$this->form_name]['current_index'];
+		    $this->persist_data($_SESSION[$this->form_name]['current_index']);
+			$this->on_pg = $this->tg_index;
+			$_SESSION[$this->form_name]['current_index'] = $this->on_pg;
 			$this->load_data();
 		}
 		
-		protected function persist_data(){
+		protected function persist_data($i = null){
 			if ( is_array($this->pages)){
-				$_SESSION[$this->form_name]['data'][$this->pages[$this->on_pg]] = $this->methodVars;
+				$_SESSION[$this->form_name]['data'][$this->pages[$i]] = $this->methodVars;
 			}
 			else{ $_SESSION[$this->form_name]['data']  = $this->methodVars; }
  		}
  		
 		protected function load_data(){
+			var_dump($_SESSION[$this->form_name]['data']);
 			$this->methodVars =  array();
 			if ( is_array($this->pages) && isset($_SESSION[$this->form_name]['data'][$this->pages[$this->on_pg]])){
 				$this->methodVars = $_SESSION[$this->form_name]['data'][$this->pages[$this->on_pg]];
@@ -215,6 +223,8 @@
 		function run($supress=false){
 			if ($this->checksub()){
 				if (!$this->is_processed){
+					var_dump( $this->tg_index  );
+					var_dump($_SESSION[$this->form_name]['current_index']);
 					if ( $this->is_sub || ($this->is_nav && $this->tg_index >= $_SESSION[$this->form_name]['current_index'])){
 						$this->run_validate();
 						if ($this->is_valid){
@@ -225,11 +235,12 @@
 									if ($this->do_post === "only") { return;}
 								}
 							}
- 							$this->navigate();
+							$this->navigate();
 						}
 					}
+					if ($this->is_nav && $this->tg_index < $_SESSION[$this->form_name]['current_index']){ $this->navigate(); }
  				}
-			}; 			
+			}
 			if (!$supress){ echo $this->generate();}
 		}
 	
