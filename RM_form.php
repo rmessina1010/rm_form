@@ -58,6 +58,9 @@
 		protected $kp_inv_data	= false;
 		protected $methodVars	= array();
 		protected $sub_html		= '';
+		protected $use_buffer	= true;
+		protected $buffer		= array();
+		protected $buffer_at	= 0;
 		
 		
 		function __construct($sub, $args = array()){
