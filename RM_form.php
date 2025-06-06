@@ -266,8 +266,15 @@
 	  		}
 	  		else if (isset($_SESSION[$this->form_name]['data'])){ $this->load_data($this->pages);}
 	  	}
-  		
- 		function run($supress=false){
+	  	
+ 	  	function get_data( $flat = false ){
+		  	if (!is_array($this->pages) || !$flat ) {return $this->form_data; }
+		  	$data  = array(); 
+		  	foreach ($this->form_data as $page) { $data = array_merge($data, $page); }
+		  	return  $data;
+	  	}
+
+   		function run($supress=false){
 			if ($this->checksub()){
 				if (!$this->is_processed){
 					if ( $this->is_sub || ($this->is_nav && $this->tg_index >= $_SESSION[$this->form_name]['current_index'])){
@@ -425,7 +432,7 @@ TEXT;
 	
 	function process(){
 		echo "<div>PROCESSING</div>";
-		var_dump(json_encode($_SESSION[$this->form_name]['data']));
+		var_dump(json_encode($this->get_data(true)));
 		return true;
 	}
 }
@@ -438,7 +445,7 @@ $form->run();
 //restrict navigation and validity to page/ -- done
 //buffer  --  done
 //load data -- done 
-//flatten data
+//flatten data -- done
 // switch submit/nav values imput method
 // varable retrieval ( for tests)
 // multi-page vars(???)
