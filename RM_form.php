@@ -24,10 +24,10 @@
 		display: none;
 	}
 </style><?
-	function state_o(){
+	function state_o($s=null){
 		$states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 		$state_options ="\n";
-		foreach ($states as $state){  $state_options.= "<option value=\"$state\">$state</option>\n";}
+		foreach ($states as $state){  $sel = $state == $s ? ' selected ': ''; $state_options.= "<option value=\"$state\"$sel>$state</option>\n";}
 		return $state_options;
 	}
 	/**
@@ -61,7 +61,7 @@
 		protected $use_buffer	= true;
 		
 		
-		function __construct($sub, $args = array()){
+		function __construct($sub, $args = array(), $fill=null){
 			// if (!headers_sent() && session_status() === PHP_SESSION_NONE) { session_start();  echo"!!!";}
  				
 			foreach($args  as $possible_attr_key => $att_val){
@@ -77,13 +77,15 @@
 			if (isset($args['navs']) && is_array($args['navs'])){ $this->navs = $args['navs']; }
 			$this->pg_ct =count($this->pages);
 			$this->form_name = isset($this->attrs['name']) ?  $this->attrs['name'] : 'dflt';
+
 			if (!isset($_SESSION[$this->form_name])){
-				$_SESSION[$this->form_name]['data']			= array();
+				$_SESSION[$this->form_name]['data']			= is_array($fill)? $fill : array();
 				$_SESSION[$this->form_name]['current_index']= is_array($this->pages) ? 0 :  null;
 				$_SESSION[$this->form_name]['buffer_at']	= 0;
 				// $_SESSION[$this->form_name]['prev_pg']		=    null;
 
 			}else{ 
+
 /*
 								echo "<div>Pre exisiting</div>";
 								var_dump($_SESSION[$this->form_name]);
@@ -177,7 +179,7 @@
    		}
 	
    		private function re_ready_form(){
-	   		$_SESSION[$this->form_name]= array( 'data'=>array(), 'current_index'=>0);
+	   		unset($_SESSION[$this->form_name]);
 	   		$this->on_pg =0;
 	   		$this->tg_index=0;
 	   		$this->is_processed = false;
@@ -228,7 +230,7 @@
 			}
 			if ($this->is_nav) {$this->on_pg = $this->tg_index;}
 			$_SESSION[$this->form_name]['current_index'] = $this->on_pg;
-			$this->load_data($this->pages[$this->on_pg]);
+			$this->load_data(is_array($this->pages) ? $this->pages[$this->on_pg] : $this->pages);
 		}
 		
 		protected function persist_data(){
@@ -258,6 +260,13 @@
 			}
   		}
   		
+  		function check_loaded(){
+	  		if (is_array($this->pages)){
+	  		 	if (isset($_SESSION[$this->form_name]['data'][$this->pages[$this->on_pg]])){ $this->load_data($this->pages[$this->on_pg]);}
+	  		}
+	  		else if (isset($_SESSION[$this->form_name]['data'])){ $this->load_data($this->pages);}
+	  	}
+  		
  		function run($supress=false){
 			if ($this->checksub()){
 				if (!$this->is_processed){
@@ -284,6 +293,7 @@
 					}
  				}
 			}
+			else{ $this->check_loaded();}
 			if (!$supress){ echo $this->generate();}
 		}
 	
@@ -351,7 +361,6 @@ TEXT;
 
 	
 	function midit(){
-		$state_o= 'state_o';
   		return <<<TEXT
 		{$this->navigation_h()}
         <div><label>Address: </label>
@@ -361,8 +370,7 @@ TEXT;
 TEXT;
 	}
 	function midwest(){
-		$state_o= 'state_o';
-  		return <<<TEXT
+   		return <<<TEXT
 		{$this->navigation_h()}
         <div><label>profession: </label>
         	<input type="text" name="profession" id="profession" placeholder="profession" {$this->get_value('profession')} />{$this->report('profession')}
@@ -385,7 +393,7 @@ TEXT;
         {$this->report('Opps', 'div')}
         <div>
 	        <label>State: </label>
-	        <select name ="selectme"> {$state_o()}</select>
+	        <select name ="selectme"> {$state_o($this->get_value('selectme','',''))}</select>
 	    </div>
 	    {$this->navigation_b()}
         <div><input type="checkbox" id="check" name="check" {$this->is_checked('check')}> <span>Remember me</span></div>
@@ -417,17 +425,19 @@ TEXT;
 	
 	function process(){
 		echo "<div>PROCESSING</div>";
-		var_dump($_SESSION[$this->form_name]['data']);
+		var_dump(json_encode($_SESSION[$this->form_name]['data']));
 		return true;
 	}
 }
-	
-$form = new myForm( 'submit',array('mtd'=>'get', 'navs'=>array('navform')));
+$test_data = array ("formit"=>array("Uname"=>"ff","Pass"=>"ff","input1"=>"1","input2"=>"2","input3"=>"3","input4"=>"4","selectme"=>"val5","navform"=>"1/0","check"=>"on"),"midit"=>array("something"=>"gygfvfvfv f f f","navform"=>"2/1"),"midwest"=>array("profession"=>"addjkkafdjkklaksldkakkad","navform"=>"3/2"),"pageit"=>array("Uname"=>"ccc","Pass"=>"ccc","selectme"=>"CO","submit"=>"Log In Here","check"=>"on"));
+
+var_dump($test_data);
+$form = new myForm( 'submit',array('mtd'=>'get', 'navs'=>array('navform')), $test_data);
 $form->run();
 //todo:
 //restrict navigation and validity to page/ -- done
 //buffer  --  done
-//load data
+//load data -- done 
 //flatten data
 // switch submit/nav values imput method
 // varable retrieval ( for tests)
