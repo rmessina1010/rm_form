@@ -59,8 +59,6 @@
 		protected $methodVars	= array();
 		protected $sub_html		= '';
 		protected $use_buffer	= true;
-		protected $buffer		= array();
-		protected $buffer_at	= 0;
 		
 		
 		function __construct($sub, $args = array()){
@@ -166,7 +164,7 @@
 	  				}
 	 			}
  			} 
-			var_dump( array($this->is_sub, $this->is_nav,  $this->tg_index, $_SESSION[$this->form_name]['current_index'],  $_SESSION[$this->form_name]['data']));
+			var_dump( array($this->is_sub, $this->is_nav,  $this->tg_index, $_SESSION[$this->form_name]));
  			return ($this->is_sub || $this->is_nav);
    		}
 	
@@ -224,7 +222,10 @@
 		}
 		
 		protected function navigate($is_fwd = true){
-		    if ($is_fwd) {$this->persist_data();}
+		    if ($is_fwd) { $this->persist_data();}
+		    else if(is_array($this->pages) &&  $this->use_buffer && $_SESSION[$this->form_name]['buffer_at'] == $_SESSION[$this->form_name]['current_index']){
+				$_SESSION[$this->form_name]['buffer'] = array($this->pages[$_SESSION[$this->form_name]['buffer_at']] => $GLOBALS['_'.$this->method]);
+			}
 			if ($this->is_nav) {$this->on_pg = $this->tg_index;}
 			$_SESSION[$this->form_name]['current_index'] = $this->on_pg;
 			$this->load_data($this->pages[$this->on_pg]);
@@ -243,8 +244,14 @@
 			var_dump($this->pages[$_SESSION[$this->form_name]['current_index']]);			
 			var_dump($this->on_pg);			
 			$this->methodVars =  array();
-			if ( is_array($this->pages) && isset($_SESSION[$this->form_name]['data'][$pg_name])){
-				$this->methodVars = $_SESSION[$this->form_name]['data'][$pg_name];
+			if (is_array($this->pages)){
+				if ($this->use_buffer && isset($_SESSION[$this->form_name]['buffer'][$pg_name])){
+					$this->methodVars = $_SESSION[$this->form_name]['buffer'][$pg_name];
+					return; 
+				}
+				if (isset($_SESSION[$this->form_name]['data'][$pg_name])){
+					$this->methodVars = $_SESSION[$this->form_name]['data'][$pg_name];
+				}
 			}
 			if(isset($_SESSION[$this->form_name]['data']) && !is_array($this->pages)){
 				$this->methodVars = $_SESSION[$this->form_name]['data'];
@@ -267,16 +274,13 @@
 								}
 							}
 							$this->navigate();
-							if ($_SESSION[$this->form_name]['buffer_at'] == $_SESSION[$this->form_name]['current']){
-								$_SESSION[$this->form_name]['buffer_at'] = $_SESSION[$this->form_name]['current'];
-							}
 						}
 					}
 					elseif($this->is_nav && $this->tg_index < $_SESSION[$this->form_name]['current_index']){
- 						$this->navigate(false);
-						if ($_SESSION[$this->form_name]['buffer_at'] == $_SESSION[$this->form_name]['current']){
-							
+						if( $_SESSION[$this->form_name]['current_index'] > $_SESSION[$this->form_name]['buffer_at']){
+							$_SESSION[$this->form_name]['buffer_at'] = $_SESSION[$this->form_name]['current_index'];
 						}
+ 						$this->navigate(false);
 					}
  				}
 			}
@@ -421,5 +425,12 @@ TEXT;
 $form = new myForm( 'submit',array('mtd'=>'get', 'navs'=>array('navform')));
 $form->run();
 //todo:
-//restrict navigation and validity to page/
+//restrict navigation and validity to page/ -- done
+//buffer  --  done
+//load data
+//flatten data
+// switch submit/nav values imput method
+// varable retrieval ( for tests)
+// multi-page vars(???)
+// clean up comments / output
 ?>
