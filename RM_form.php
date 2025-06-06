@@ -80,8 +80,9 @@
 			$this->pg_ct =count($this->pages);
 			$this->form_name = isset($this->attrs['name']) ?  $this->attrs['name'] : 'dflt';
 			if (!isset($_SESSION[$this->form_name])){
-				$_SESSION[$this->form_name]['data']			=    array();
+				$_SESSION[$this->form_name]['data']			= array();
 				$_SESSION[$this->form_name]['current_index']= is_array($this->pages) ? 0 :  null;
+				$_SESSION[$this->form_name]['buffer_at']	= 0;
 				// $_SESSION[$this->form_name]['prev_pg']		=    null;
 
 			}else{ 
@@ -266,10 +267,16 @@
 								}
 							}
 							$this->navigate();
+							if ($_SESSION[$this->form_name]['buffer_at'] == $_SESSION[$this->form_name]['current']){
+								$_SESSION[$this->form_name]['buffer_at'] = $_SESSION[$this->form_name]['current'];
+							}
 						}
 					}
 					elseif($this->is_nav && $this->tg_index < $_SESSION[$this->form_name]['current_index']){
  						$this->navigate(false);
+						if ($_SESSION[$this->form_name]['buffer_at'] == $_SESSION[$this->form_name]['current']){
+							
+						}
 					}
  				}
 			}
