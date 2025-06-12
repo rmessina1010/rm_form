@@ -15,7 +15,7 @@
 		protected $pg_ct 		= 0;
 		protected $on_pg 		= 0;
 		protected $is_valid 	= false;
-		protected $method 		= '';
+		protected $method 		= 'GET';
 		protected $action 		= '';
 		protected $pages 		= '';
 		protected $is_sub		= false;
@@ -24,7 +24,8 @@
 		protected $navs			= array();
 		protected $tg_index	= null;
 		protected $is_processed	= false;
-		protected $sub 			= '';
+		protected $sub 			= 'submit';
+		protected $with_sub		= null;
 		protected $errs 		= array();
 		protected $do_post		= true;
 		protected $kp_inv_data	= false;
@@ -33,8 +34,9 @@
 		protected $use_buffer	= true;
 		
 		
-		function __construct($name, $sub, $args = array(), $fill=null){
+		function __construct($name, $args = array(), $fill=null){
 			// if (!headers_sent() && session_status() === PHP_SESSION_NONE) { session_start();  echo"!!!";}
+			$args = !is_array($ags) ? array() :$args;
  				
 			foreach($args  as $possible_attr_key => $att_val){
 				if (isset($this->attr_keys[$possible_attr_key])){ 
@@ -44,8 +46,15 @@
 					$this->attrs[$possible_attr_key] =  $att_val; 
 				}
 			}
-			$this->method = isset($args['mtd']) && $args['mtd'] ? strtoupper($args['mtd']) : 'GET';
- 			$this->sub =$sub;
+			if ( isset($args['mtd']) && $args['mtd']) { $this->method =  strtoupper($args['mtd']) ;}
+			if (isset($args['sub'])){
+				if  (is_array($args['sub'])){
+					$subs = array_values($args['sub']);
+					$this->sub =  $subs[0];
+					if (isset($subs[1])){ $this->with_sub = $subs[1]; }
+				}else{ $this->sub =$args['sub'];}
+			}
+ 			
 			if (isset($args['navs']) && is_array($args['navs'])){ $this->navs = $args['navs']; }
 			$this->pg_ct = is_array($this->pages) ? count($this->pages) : 1;
 			$this->form_name = $this->attrs['name'] = $name;
@@ -121,9 +130,9 @@
 		}
 
 		
-		function checksub($with = null ){
+		function checksub(){
 			echo "<div> CHECKSUB!!!</div>";
- 			$this->is_sub 	= array_key_exists($this->sub, $GLOBALS['_'.$this->method]) && ( !$with ||  $GLOBALS['_'.$this->method][$this->sub] === $with) ;
+ 			$this->is_sub 	= array_key_exists($this->sub, $GLOBALS['_'.$this->method]) && ( !$this->with_sub ||  $GLOBALS['_'.$this->method][$this->sub] === $this->with_sub) ;
  			$this->is_nav 	= false;
  			$this->on_pg	= isset($_SESSION[$this->form_name]['current_index']) ?  $_SESSION[$this->form_name]['current_index'] :  0;
  			$this->tg_index = $this->on_pg;
@@ -283,7 +292,7 @@
 //buffer  --  done
 //load data -- done 
 //flatten data -- done
-// make name attribute mandatory
+// make name attribute mandatory -- done 
 // switch submit/nav values imput method
 // varable retrieval ( for tests)
 // multi-page vars(???)
