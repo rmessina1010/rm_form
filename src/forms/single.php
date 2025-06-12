@@ -56,7 +56,26 @@
 TEXT;
 	}
 
-		
+
+	function navigation_h($b='<div>Page ',$m=' of ',$a='</div> '){
+		return ( is_array($this->pages)) ? $b.($this->on_pg+1).$m.$this->pg_ct.$a :'';
+	}
+	
+	function navigation_b($sub=false){
+		$nav = '';
+		if ($this->on_pg > 0){ 
+			$nav.= '<button type="submit" name="navform" id="back" value="'.($this->on_pg -1).'/'.$this->on_pg.'"><< Previous</button>';
+ 		}
+		if ($this->on_pg+1 == $this->pg_ct){ 
+			$nav.=($sub ? $sub :  $this->sub_html);
+		}else if ($this->on_pg < $this->pg_ct){
+			$i = $this->on_pg + 1;
+			$nav.='<button type="submit" name="navform" id="next" value="'.($this->on_pg +1).'/'.$this->on_pg.'">Next >></button>';
+ 		}
+		return $nav ? "<div>$nav</div>": "";
+	}
+
+
 	function post_process(){
 		echo '<h3> ** '.($this->is_processed ? 'The form was processed successfully' : 'Attempt to process failed!').'</h3>' ;
 	}
