@@ -47,7 +47,7 @@
 			$this->method = isset($args['mtd']) && $args['mtd'] ? strtoupper($args['mtd']) : 'GET';
  			$this->sub =$sub;
 			if (isset($args['navs']) && is_array($args['navs'])){ $this->navs = $args['navs']; }
-			$this->pg_ct =count($this->pages);
+			$this->pg_ct = is_array($this->pages) ? count($this->pages) : 1;
 			$this->form_name = $this->attrs['name'] = $name;
 
 			if (!isset($_SESSION[$this->form_name])){
