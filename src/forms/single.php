@@ -1,4 +1,5 @@
 <?
+	include_once 'shared_foos/foos.php';
 	class otherForm extends RM_form{
 	public 	$pages 		= 'form_instance';
 	public  $sub_html	= '<input type="submit" name="submit" id="submit" value="Log In Here"/>';

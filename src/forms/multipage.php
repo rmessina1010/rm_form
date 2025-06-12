@@ -1,4 +1,5 @@
 <?
+	include_once 'shared_foos/foos.php';
 	class myForm extends RM_form{
 	public 	$pages 		= ['formit', 'midit', 'midwest', 'pageit'];
 	public  $sub_html	= '<input type="submit" name="submit" id="submit" value="Log In Here"/>';

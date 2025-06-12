@@ -1,40 +1,12 @@
 <?php 
 	ini_set('display_errors', 1); 
 	session_start();  /// session
-?> 
-<style>
- 	form div, form p, form h2, form h3{
-		padding: .5em 1em;
-		margin:0;
-	}
-	label { 
-		font-weight: bold;
-	}
-	form { 
-		display: inline-block;
-		padding: .5em;
-		border: 1px solid;
-	}
-	.error{
-		display: block;
-		padding-bottom: .15em;
-		color: red;
-	}
-	.error + br {
-		display: none;
-	}
-</style><?
-	function state_o($s=null){
-		$states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
-		$state_options ="\n";
-		foreach ($states as $state){  $sel = $state == $s ? ' selected ': ''; $state_options.= "<option value=\"$state\"$sel>$state</option>\n";}
-		return $state_options;
-	}
+
 	/**
 	* HTML/PHP form
 	*/
 	class RM_form {
-		protected $attr_keys	= ["char"=>"accept-charset", "act"=>"action", "auto"=>"autocomplete", "class"=>"class","enc"=>"enctype", "id"=>"id", 										"mtd"=>"method", "name"=>"name", "noval"=> "novalidate", "tgt"=>"target", "style"=>"style"];
+		protected $attr_keys	= ["char"=>"accept-charset", "act"=>"action", "auto"=>"autocomplete", "class"=>"class","enc"=>"enctype", "id"=>"id", 										"mtd"=>"method", "noval"=> "novalidate", "tgt"=>"target", "style"=>"style"];
 		protected $attrs		= array();
 		protected $form_name	= '';
 		protected $form_data	= array();
@@ -61,7 +33,7 @@
 		protected $use_buffer	= true;
 		
 		
-		function __construct($sub, $args = array(), $fill=null){
+		function __construct($name, $sub, $args = array(), $fill=null){
 			// if (!headers_sent() && session_status() === PHP_SESSION_NONE) { session_start();  echo"!!!";}
  				
 			foreach($args  as $possible_attr_key => $att_val){
@@ -76,7 +48,7 @@
  			$this->sub =$sub;
 			if (isset($args['navs']) && is_array($args['navs'])){ $this->navs = $args['navs']; }
 			$this->pg_ct =count($this->pages);
-			$this->form_name = isset($this->attrs['name']) ?  $this->attrs['name'] : 'dflt';
+			$this->form_name = $this->attrs['name'] = $name;
 
 			if (!isset($_SESSION[$this->form_name])){
 				$_SESSION[$this->form_name]['data']			= is_array($fill)? $fill : array();
