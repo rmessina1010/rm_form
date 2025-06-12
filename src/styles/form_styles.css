@@ -10,6 +10,9 @@ form {
 	padding: .5em;
 	border: 1px solid;
 }
+form+form{
+	margin-left: 1em;
+}
 .error{
 	display: block;
 	padding-bottom: .15em;
