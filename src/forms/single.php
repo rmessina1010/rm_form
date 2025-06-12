@@ -2,8 +2,8 @@
 	include_once 'shared_foos/foos.php';
 	class otherForm extends RM_form{
 	public 	$pages 		= 'form_instance';
-	private $sub 	 	= 'submit_1';
-	public  $sub_html	= '<input type="submit" name="'.$this->sub.'" id="submit" value="Log In Here"/>';
+	protected $with_sub = 'Log In Here-1';
+	public  $sub_html	= '<input type="submit" name="submit" id="submit" value="Log In Here-1"/>';
 
 	function validate(){
  	 		if (!$this->methodVars['Pass']){ $this->setErr('Pass', 'A password is required'); }

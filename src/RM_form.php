@@ -36,7 +36,7 @@
 		
 		function __construct($name, $args = array(), $fill=null){
 			// if (!headers_sent() && session_status() === PHP_SESSION_NONE) { session_start();  echo"!!!";}
-			$args = !is_array($ags) ? array() :$args;
+			$args = !is_array($args) ? array() :$args;
  				
 			foreach($args  as $possible_attr_key => $att_val){
 				if (isset($this->attr_keys[$possible_attr_key])){ 
