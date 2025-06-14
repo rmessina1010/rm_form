@@ -2,7 +2,8 @@
 	include_once 'shared_foos/foos.php';
 	class myForm extends RM_form{
 	public 	$pages 		= ['formit', 'midit', 'midwest', 'pageit'];
-	public  $sub_html	= '<input type="submit" name="submit" id="submit" value="Log In Here"/>';
+	protected $with_sub = 'Log In Here-m';
+	public  $sub_html	= '<input type="submit" name="submit" id="submit" value="Log In Here-m"/>';
 		
 	function validate(){
 		$current_pg = $this->pages[$this->on_pg];

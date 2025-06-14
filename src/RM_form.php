@@ -36,7 +36,7 @@
 		
 		function __construct($name, $args = array(), $fill=null){
 			// if (!headers_sent() && session_status() === PHP_SESSION_NONE) { session_start();  echo"!!!";}
-			$args = !is_array($ags) ? array() :$args;
+			$args = !is_array($args) ? array() :$args;
  				
 			foreach($args  as $possible_attr_key => $att_val){
 				if (isset($this->attr_keys[$possible_attr_key])){ 
@@ -81,6 +81,7 @@
 
 		protected function setErr($field, $message, $delim=' '){
 			$this->errs[$field] =  isset($this->errs[$field]) ?  $this->errs[$field].$delim.$message."\n": $message;
+			echo "setting err";
 			if (!$this->kp_inv_data){ $this->set_methodVar($field, '');}
 		}
 
@@ -109,7 +110,6 @@
  			// $this->on_pg = is_array($this->pages) ?  $_SESSION[$this->form_name]['current_index'] : $this->on_pg;
 			$this->validate();
 			$this->is_valid = (count($this->errs) < 1);
-			if ($this->is_valid) { }
 			var_dump($this->methodVars);
  			var_dump($this->is_valid);
 
@@ -156,8 +156,8 @@
    		}
    		
    		private  function set_methodVar($field,$val=''){
- 			$this->methodVar[$field] = $val;
-   		}
+ 			$this->methodVars[$field] = $val;
+    	}
 	
    		private function re_ready_form(){
 	   		unset($_SESSION[$this->form_name]);
@@ -293,7 +293,7 @@
 //load data -- done 
 //flatten data -- done
 // make name attribute mandatory -- done 
-// switch submit/nav values imput method
+// switch submit/nav values imput method --done
 // varable retrieval ( for tests)
 // multi-page vars(???)
 // clean up comments / output
