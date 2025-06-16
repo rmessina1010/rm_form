@@ -83,7 +83,7 @@
 			if ($condition_state === false ){ return; }
 			if (is_string($condition_state)){ $delim = $condition_state; }
 			$this->errs[$field] =  isset($this->errs[$field]) ?  $this->errs[$field].$delim.$message."\n": $message;
-			if (!$this->kp_inv_data){ $this->set_methodVar($field, '');}
+			if (!$this->kp_inv_data && isset($this->methodVars[$field])){ $this->set_methodVar($field, '');}
 		}
 
 		function form_body_preprocess($html){
@@ -296,7 +296,7 @@
 // make name attribute mandatory -- done 
 // switch submit/nav values imput method --done
 // varable retrieval ( for tests) -- done
-// do not set unexiting field when  err
+// do not set unexiting field when  err -- done
 // move report
 // check single page functionality
 // multi-page vars(???)
