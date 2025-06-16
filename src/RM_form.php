@@ -249,6 +249,18 @@
 	  		else if (isset($_SESSION[$this->form_name]['data'])){ $this->load_data($this->pages);}
 	  	}
 	  	
+	  	protected function report($field, $bef="<span class=\"error\">", $aft="</span>", $del= false, $gbef="", $gaft=""){
+			if (!isset($this->errs[$field])) { return ''; }
+			if (is_string($del)){
+				$report = explode($del,$this->errs[$field]);
+				$errors = $gbef.$bef.implode($aft.$bef,$report).$aft.$gaft;
+			}
+			else{ 
+				$errors = $bef.$this->errs[$field].$aft; 
+			}
+			return   $errors;
+		}
+	  	
  	  	function get_data( $flat = false ){
 		  	if (!is_array($this->pages) || !$flat ) {return $this->form_data; }
 		  	$data  = array(); 
@@ -297,7 +309,7 @@
 // switch submit/nav values imput method --done
 // varable retrieval ( for tests) -- done
 // do not set unexiting field when  err -- done
-// move report
+// move report -- done
 // check single page functionality
 // multi-page vars(???)
 // clean up comments / output

@@ -15,7 +15,6 @@
 	 	  	$this->setErr('input2', 'must equal 2', ($this->methodVars['input2'] != '2' ),'; ');
  	}
  	
-	protected function report($field, $tag="span", $attr="class=\"error\""){ return  isset($this->errs[$field]) ? "<$tag $attr>".$this->errs[$field]."</$tag>" :"";}
 
 	function form_instance(){
 	 	$resub =  $this->is_sub ? '<h2>You Have Submitted the form</h2>' : '';

@@ -19,7 +19,6 @@
 		 	}	
 		}
 	}
-	protected function report($field, $tag="span", $attr="class=\"error\""){ return  isset($this->errs[$field]) ? "<$tag $attr>".$this->errs[$field]."</$tag>" :"";}
 
 	function formit(){
 	 	$resub =  $this->is_sub ? '<h2>You Have Submitted the form</h2>' : '';
