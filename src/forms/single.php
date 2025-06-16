@@ -6,13 +6,13 @@
 	public  $sub_html	= '<input type="submit" name="submit" id="submit" value="Log In Here-1"/>';
 
 	function validate(){
- 	 		if (!$this->methodVars['Pass']){ $this->setErr('Pass', 'A password is required'); }
-			if (!$this->methodVars['Uname']){ $this->setErr('Uname', 'A user name is required'); }
-	 	  	if ($this->methodVars['Pass'] != $this->methodVars['Uname']){ { $this->setErr('Opps', 'hacker!!!'); }}
-		 	for ($i=1; $i<5; $i++){
-		 	  if (!$this->methodVars['input'.$i]){ { $this->setErr('input'.$i, 'you are missing data at input'.$i); }}
+	 		$this->setErr('Pass', 'A password is required', (!$this->methodVars['Pass']));
+			$this->setErr('Uname', 'A user name is required', (!$this->methodVars['Uname'])); 
+	 	  	$this->setErr('Opps', 'hacker!!!', ($this->methodVars['Pass'] != $this->methodVars['Uname']));
+	 	  	for ($i=1; $i<5; $i++){
+		 	   $this->setErr('input'.$i, 'you are missing data at input'.$i, (!$this->methodVars['input'.$i]));
 	 		}
-	 	  	if ($this->methodVars['input2'] != '2' ){ { $this->setErr('input2', 'must equal 2', '; '); }}
+	 	  	$this->setErr('input2', 'must equal 2', ($this->methodVars['input2'] != '2' ),'; ');
  	}
  	
 	protected function report($field, $tag="span", $attr="class=\"error\""){ return  isset($this->errs[$field]) ? "<$tag $attr>".$this->errs[$field]."</$tag>" :"";}

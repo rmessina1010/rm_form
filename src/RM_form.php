@@ -79,9 +79,10 @@
 	  		return  $this->css;
   		}
 
-		protected function setErr($field, $message, $delim=' '){
+		protected function setErr($field, $message, $condition_state = true, $delim=' '){
+			if ($condition_state === false ){ return; }
+			if (is_string($condition_state)){ $delim = $condition_state; }
 			$this->errs[$field] =  isset($this->errs[$field]) ?  $this->errs[$field].$delim.$message."\n": $message;
-			echo "setting err";
 			if (!$this->kp_inv_data){ $this->set_methodVar($field, '');}
 		}
 
@@ -294,7 +295,10 @@
 //flatten data -- done
 // make name attribute mandatory -- done 
 // switch submit/nav values imput method --done
-// varable retrieval ( for tests)
+// varable retrieval ( for tests) -- done
+// do not set unexiting field when  err
+// move report
+// check single page functionality
 // multi-page vars(???)
 // clean up comments / output
 ?>

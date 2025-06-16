@@ -8,14 +8,14 @@
 	function validate(){
 		$current_pg = $this->pages[$this->on_pg];
 		if( $current_pg == 'formit' || $current_pg == 'pageit'){
-	 		if (!$this->methodVars['Pass']){ $this->setErr('Pass', 'A password is required'); }
-			if (!$this->methodVars['Uname']){ $this->setErr('Uname', 'A user name is required'); }
-	 	  	if ($this->methodVars['Pass'] != $this->methodVars['Uname']){ { $this->setErr('Opps', 'hacker!!!'); }}
+	 		$this->setErr('Pass', 'A password is required', (!$this->methodVars['Pass']));
+			$this->setErr('Uname', 'A user name is required', (!$this->methodVars['Uname'])); 
+	 	  	$this->setErr('Opps', 'hacker!!!', ($this->methodVars['Pass'] != $this->methodVars['Uname']));
 	 	  	if ($current_pg == 'formit'){
 		 	  	for ($i=1; $i<5; $i++){
-			 	  if (!$this->methodVars['input'.$i]){ { $this->setErr('input'.$i, 'you are missing data at input'.$i); }}
+			 	   $this->setErr('input'.$i, 'you are missing data at input'.$i, (!$this->methodVars['input'.$i]));
 		 		}
-		 	  	if ($this->methodVars['input2'] != '2' ){ { $this->setErr('input2', 'must equal 2', '; '); }}
+		 	  	$this->setErr('input2', 'must equal 2', ($this->methodVars['input2'] != '2' ),'; ');
 		 	}	
 		}
 	}
