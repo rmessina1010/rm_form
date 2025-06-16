@@ -10,8 +10,6 @@
 		protected $attrs		= array();
 		protected $form_name	= '';
 		protected $form_data	= array();
-		protected $css			= '';
-		protected $is_css_url 	= false;
 		protected $pg_ct 		= 0;
 		protected $on_pg 		= 0;
 		protected $is_valid 	= false;
@@ -75,10 +73,6 @@
 			}
   		}
   		
-  		protected function style(){
-	  		return  $this->css;
-  		}
-
 		protected function setErr($field, $message, $condition_state = true, $delim=' '){
 			if ($condition_state === false ){ return; }
 			if (is_string($condition_state)){ $delim = $condition_state; }
