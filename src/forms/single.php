@@ -3,7 +3,7 @@
 	class otherForm extends RM_form{
 	public 	$pages 		= 'form_instance';
 	protected $with_sub = 'Log In Here-1';
-	public  $sub_html	= '<input type="submit" name="submit" id="submit" value="Log In Here-1"/>';
+	public  $sub_html	= '<input type="submit" name="CHANGE_ME" id="submit" value="REPLACE_ME"/>';
 
 	function validate(){
 	 		$this->setErr('Pass', 'A password is required', (!$this->methodVars['Pass']));
@@ -67,7 +67,7 @@ TEXT;
 			$nav.= '<button type="submit" name="navform" id="back" value="'.($this->on_pg -1).'/'.$this->on_pg.'"><< Previous</button>';
  		}
 		if ($this->on_pg+1 == $this->pg_ct){ 
-			$nav.=($sub ? $sub :  $this->sub_html);
+			$nav.=($sub ? $sub :  str_replace('REPLACE_ME', $this->with_sub, str_replace('CHANGE_ME', $this->sub, $this->sub_html)));
 		}else if ($this->on_pg < $this->pg_ct){
 			$i = $this->on_pg + 1;
 			$nav.='<button type="submit" name="navform" id="next" value="'.($this->on_pg +1).'/'.$this->on_pg.'">Next >></button>';

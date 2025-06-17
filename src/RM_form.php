@@ -304,7 +304,8 @@
 // varable retrieval ( for tests) -- done
 // do not set unexiting field when  err -- done
 // move report -- done
-// check single page functionality
+// check single page functionality -- done
+// generate a submit button 
 // multi-page vars(???)
 // clean up comments / output
 ?>

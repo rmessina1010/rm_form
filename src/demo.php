@@ -18,7 +18,6 @@ $form->run();
 $form2 = new otherForm( 'test2', array('mtd'=>'get' ), $test_data2);
 $form2->run();
 
-$form3 = new otherForm( 'test3', array('mtd'=>'get' ));
+$form3 = new otherForm( 'test3', array('mtd'=>'get' , 'sub'=> 'vrt' ));
 $form3->run();
-
 ?>
