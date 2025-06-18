@@ -10,6 +10,7 @@
 		protected $attrs		= array();
 		protected $form_name	= '';
 		protected $form_data	= array();
+		protected $form_idtfy	= null;
 		protected $pg_ct 		= 0;
 		protected $on_pg 		= 0;
 		protected $is_valid 	= false;
@@ -45,6 +46,7 @@
 				}
 			}
 			if ( isset($args['mtd']) && $args['mtd']) { $this->method =  strtoupper($args['mtd']) ;}
+			if ( isset($args['idtfy']) && is_string($args['idtfy']) && $args['idtfy']) { $this->form_idtfy = $args['idtfy'] ;}
 			if (isset($args['sub'])){
 				if  (is_array($args['sub'])){
 					$subs = array_values($args['sub']);
@@ -127,10 +129,13 @@
 		
 		function checksub(){
 			echo "<div> CHECKSUB!!!</div>";
- 			$this->is_sub 	= array_key_exists($this->sub, $GLOBALS['_'.$this->method]) && ( !$this->with_sub ||  $GLOBALS['_'.$this->method][$this->sub] === $this->with_sub) ;
+ 			$this->is_sub 	= 	array_key_exists($this->sub, $GLOBALS['_'.$this->method]) 
+ 								&& ( !$this->with_sub  ||  $GLOBALS['_'.$this->method][$this->sub] === $this->with_sub)  
+ 								&& ( !$this->form_idtfy || (is_string($this->form_idtfy) && isset($GLOBALS['_'.$this->method][$this->form_idtfy]))) ;
  			$this->is_nav 	= false;
  			$this->on_pg	= isset($_SESSION[$this->form_name]['current_index']) ?  $_SESSION[$this->form_name]['current_index'] :  0;
  			$this->tg_index = $this->on_pg;
+ 			
  			if(!$this->is_sub){
 	  			foreach ($this->navs as  $navkey){
 	  				if (array_key_exists($navkey, $GLOBALS['_'.$this->method])){
@@ -166,6 +171,7 @@
 		function generate(){
 			$form_html  = "<form".$this->form_attrs().">\n";
 			$form_html .= $this->form_body();
+			if (is_string($this->form_idtfy)){ $form_html.='<input type="hidden" name="'.$this->form_idtfy.'" value="'.$this->form_idtfy.'"/>'; }
 			$form_html .= "\n</form>\n";
 			if ($this->is_processed){ $this->re_ready_form(); }
 			return $form_html;
@@ -321,8 +327,8 @@
 // do not set unexiting field when  err -- done
 // move report -- done
 // check single page functionality -- done
-// generate a submit button
-// add form identifier field (user entered/default null)
+// generate a submit button  -- done
+// add form identifier field (user entered/default null) --done 
 // multi-page vars(???)
 // clean up comments / output
 ?>

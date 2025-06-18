@@ -12,12 +12,12 @@ $test_data2 = array("Uname"=>"new","Pass"=>"new","input1"=>"1","input2"=>"2","in
 
 
 var_dump($test_data);
-$form = new myForm( 'test1',  array('mtd'=>'get', 'navs'=>array('navform')), $test_data);
+$form = new myForm( 'test1',  array('mtd'=>'get', 'navs'=>array('navform'), 'idtfy'=>'form1'), $test_data);
 $form->run();
 
-$form2 = new otherForm( 'test2', array('mtd'=>'get' ), $test_data2);
+$form2 = new otherForm( 'test2', array('mtd'=>'get', 'idtfy'=>'form2' ), $test_data2);
 $form2->run();
 
-$form3 = new otherForm( 'test3', array('mtd'=>'get' , 'sub'=> 'vrt' ));
+$form3 = new otherForm( 'test3', array('mtd'=>'get' ,'idtfy'=>'form3' ));
 $form3->run();
 ?>

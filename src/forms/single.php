@@ -2,7 +2,7 @@
 	include_once 'shared_foos/foos.php';
 	class otherForm extends RM_form{
 	public 	$pages 		= 'form_instance';
-	protected $with_sub = 'Log In Here-1';
+	protected $with_sub = 'Log In Here';
 
 	function validate(){
 	 		$this->setErr('Pass', 'A password is required', (!$this->methodVars['Pass']));
