@@ -261,6 +261,22 @@
 		  	foreach ($this->form_data as $page) { $data = array_merge($data, $page); }
 		  	return  $data;
 	  	}
+	  	
+	  	function build_sub($attrs='', $inner_htm= null ){
+			$attrs = preg_replace( 'name\s*\=\s*(\'|\").*\1', '', $attrs);
+			$attrs = preg_replace( 'type\s*\=\s*(\'|\").*\1', '', $attrs);
+ 			$attrs.= 'type= "submit" name= "'.$this->sub.'"';
+ 			if ($this->with_sub){
+				$attrs = preg_replace( 'value\s*\=\s*(\'|\").*\1', '', $attrs); 
+				$attrs.=  ' value= "'.$this->with_sub.'"';
+				$inner_htm  = $inner_htm === true ? $this->with_sub : $inner_htm;
+ 			}
+			$the_button = is_string($inner_htm) ? '<button ' : '<input ';
+			$the_button.= $attrs;
+			$the_button.= is_string($inner_htm) ? $inner_htm.'</button>' : '/>' ;
+			return $the_button;
+		}
+
 
    		function run($supress=false){
 			if ($this->checksub()){
@@ -305,7 +321,8 @@
 // do not set unexiting field when  err -- done
 // move report -- done
 // check single page functionality -- done
-// generate a submit button 
+// generate a submit button
+// add form identifier field (user entered/default null)
 // multi-page vars(???)
 // clean up comments / output
 ?>
