@@ -318,7 +318,7 @@
  				}
 			}
 			else{ $this->check_loaded();}
-			if (!$supress){ echo $this->generate();}
+			if (!$this->is_processed || !$supress){ echo $this->generate();}
 		}
 	
 }
