@@ -11,6 +11,7 @@
 		protected $form_name	= '';
 		protected $form_data	= array();
 		protected $form_idtfy	= null;
+		protected $with_idtfy	= null;
 		protected $pg_ct 		= 0;
 		protected $on_pg 		= 0;
 		protected $is_valid 	= false;
@@ -46,7 +47,13 @@
 				}
 			}
 			if ( isset($args['mtd']) && $args['mtd']) { $this->method =  strtoupper($args['mtd']) ;}
-			if ( isset($args['idtfy']) && is_string($args['idtfy']) && $args['idtfy']) { $this->form_idtfy = $args['idtfy'] ;}
+			if (isset($args['idtfy'])){
+				if  (is_array($args['idtfy'])){
+					$idtfy = array_values($args['idtfy']);
+					$this->form_idtfy =  $idtfy[0];
+					if (isset($idtfy[1])){ $this->with_idtfy = $idtfy[1]; }
+				}else{ $this->form_idtfy =$args['idtfy'];}
+			}
 			if (isset($args['sub'])){
 				if  (is_array($args['sub'])){
 					$subs = array_values($args['sub']);
