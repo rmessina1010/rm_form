@@ -301,7 +301,7 @@
 							if ($this->is_sub){
 								$this->form_data = $_SESSION[$this->form_name]['data'];
 								$this->is_processed = $this->process();
-								if ($this->do_post) {
+								if ($this->is_processed && $this->do_post) {
 									$this->post_process();
  									if ($this->do_post === "only") { return;}
 								}
@@ -335,7 +335,7 @@
 // move report -- done
 // check single page functionality -- done
 // generate a submit button  -- done
-// add form identifier field (user entered/default null) --done 
+// add form identifier field (user entered/default null) --done [re check, and add logic]
 // multi-page vars(???)
 // clean up comments / output
 ?>
