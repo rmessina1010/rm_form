@@ -12,6 +12,7 @@
 		protected $form_data	= array();
 		protected $form_idtfy	= null;
 		protected $with_idtfy	= null;
+		protected $is_identified= null;
 		protected $pg_ct 		= 0;
 		protected $on_pg 		= 0;
 		protected $is_valid 	= false;
@@ -136,9 +137,14 @@
 		
 		function checksub(){
 			echo "<div> CHECKSUB!!!</div>";
- 			$this->is_sub 	= 	array_key_exists($this->sub, $GLOBALS['_'.$this->method]) 
- 								&& ( !$this->with_sub  ||  $GLOBALS['_'.$this->method][$this->sub] === $this->with_sub)  
- 								&& ( !$this->form_idtfy || (is_string($this->form_idtfy) && isset($GLOBALS['_'.$this->method][$this->form_idtfy]))) ;
+ 			$this->is_identified = ( !$this->form_idtfy 
+ 								|| ( array_key_exists($this->form_idtfy, $GLOBALS['_'.$this->method])
+ 									 && (!$this->with_idtfy  || $GLOBALS['_'.$this->method][$this->form_idtfy] === $this->with_idtfy)
+ 									)
+ 							);
+ 			$this->is_sub 	= 	$this->is_identified
+ 								&& array_key_exists($this->sub, $GLOBALS['_'.$this->method]) 
+ 								&& ( !$this->with_sub  ||  $GLOBALS['_'.$this->method][$this->sub] === $this->with_sub) ;
  			$this->is_nav 	= false;
  			$this->on_pg	= isset($_SESSION[$this->form_name]['current_index']) ?  $_SESSION[$this->form_name]['current_index'] :  0;
  			$this->tg_index = $this->on_pg;
