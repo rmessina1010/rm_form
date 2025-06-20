@@ -52,7 +52,7 @@
 				if  (is_array($args['idtfy'])){
 					$idtfy = array_values($args['idtfy']);
 					$this->form_idtfy =  $idtfy[0];
-					if (isset($idtfy[1])){ $this->with_idtfy = $idtfy[1]; }
+					if (isset($idtfy[1])){ $this->with_idtfy = $idtfy[1] === "*" ? $name : $idtfy[1]; }
 				}else{ $this->form_idtfy =$args['idtfy'];}
 			}
 			if (isset($args['sub'])){
