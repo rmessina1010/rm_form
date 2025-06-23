@@ -1,10 +1,4 @@
 <?php 
-	ini_set('display_errors', 1); 
-	session_start();  /// session
-
-	/**
-	* HTML/PHP form
-	*/
 	class RM_form {
 		protected $attr_keys	= ["char"=>"accept-charset", "act"=>"action", "auto"=>"autocomplete", "class"=>"class","enc"=>"enctype", "id"=>"id", 										"mtd"=>"method", "noval"=> "novalidate", "tgt"=>"target", "style"=>"style"];
 		protected $attrs		= array();
@@ -36,7 +30,7 @@
 		
 		
 		function __construct($name, $args = array(), $fill=null){
-			// if (!headers_sent() && session_status() === PHP_SESSION_NONE) { session_start();  echo"!!!";}
+			if (!headers_sent() && session_status() === PHP_SESSION_NONE) { session_start(); }
 			$args = !is_array($args) ? array() :$args;
  				
 			foreach($args  as $possible_attr_key => $att_val){
@@ -71,15 +65,6 @@
 				$_SESSION[$this->form_name]['data']			= is_array($fill)? $fill : array();
 				$_SESSION[$this->form_name]['current_index']= is_array($this->pages) ? 0 :  null;
 				$_SESSION[$this->form_name]['buffer_at']	= 0;
-				// $_SESSION[$this->form_name]['prev_pg']		=    null;
-
-			}else{ 
-
-/*
-								echo "<div>Pre exisiting</div>";
-								var_dump($_SESSION[$this->form_name]);
-*/
-
 			}
   		}
   		
@@ -111,13 +96,8 @@
 		protected function run_validate(){
 			$this->errs = array();
  			$this->set_methodVars();
- 			echo "<h3>VALIDATING: ".$this->pages[$_SESSION[$this->form_name]['current_index']].", with </h3>";
- 			// $this->on_pg = is_array($this->pages) ?  $_SESSION[$this->form_name]['current_index'] : $this->on_pg;
 			$this->validate();
 			$this->is_valid = (count($this->errs) < 1);
-			var_dump($this->methodVars);
- 			var_dump($this->is_valid);
-
 			// store data
 			return $this->is_valid;
 		}
@@ -133,10 +113,8 @@
 		function tern($is_true,$a,$b){
 			return $is_true ? $a : $b;
 		}
-
 		
 		function checksub(){
-			echo "<div> CHECKSUB!!!</div>";
  			$this->is_identified = ( !$this->form_idtfy 
  								|| ( array_key_exists($this->form_idtfy, $GLOBALS['_'.$this->method])
  									 && (!$this->with_idtfy  || $GLOBALS['_'.$this->method][$this->form_idtfy] === $this->with_idtfy)
@@ -160,7 +138,6 @@
 	  				}
 	 			}
  			} 
-			var_dump( array($this->is_sub, $this->is_nav,  $this->tg_index, $_SESSION[$this->form_name]));
  			return ($this->is_sub || $this->is_nav);
    		}
 	
@@ -236,10 +213,6 @@
  		}
  		
 		protected function load_data($pg_name){
-			echo "<div>loading data for {$pg_name}</div>";
-			var_dump($_SESSION[$this->form_name]['data']);
-			var_dump($this->pages[$_SESSION[$this->form_name]['current_index']]);			
-			var_dump($this->on_pg);			
 			$this->methodVars =  array();
 			if (is_array($this->pages)){
 				if ($this->use_buffer && isset($_SESSION[$this->form_name]['buffer'][$pg_name])){
@@ -296,7 +269,6 @@
  			return $the_button;
 		}
 
-
    		function run($supress=false){
 			if ($this->checksub()){
 				if (!$this->is_processed){
@@ -326,7 +298,6 @@
 			else{ $this->check_loaded();}
 			if (!$this->is_processed || !$supress){ echo $this->generate();}
 		}
-	
 }
 	
 //todo:
@@ -341,7 +312,9 @@
 // move report -- done
 // check single page functionality -- done
 // generate a submit button  -- done
-// add form identifier field (user entered/default null) --done [re check, and add logic]
+// add form identifier field (user entered/default null) [re check, and add logic] --done 
+// multi resets
 // multi-page vars(???)
-// clean up comments / output
+// checksub on construct (???)
+// clean up comments / output --done 
 ?>

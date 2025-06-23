@@ -1,4 +1,7 @@
 <?
+	ini_set('display_errors', 1); 
+	session_start();  /// session
+
 include('RM_form.php');
 include('forms/multipage.php');
 include('forms/single.php');
@@ -10,8 +13,6 @@ $test_data = array ("formit"=>array("Uname"=>"ff","Pass"=>"ff","input1"=>"1","in
 
 $test_data2 = array("Uname"=>"new","Pass"=>"new","input1"=>"1","input2"=>"2","input3"=>"3","input4"=>"4","selectme"=>"val5","navform"=>"1/0","check"=>"on") ;
 
-
-var_dump($test_data);
 $form = new myForm( 'test1',  array('mtd'=>'get', 'navs'=>array('navform'), 'idtfy'=>'form1'), $test_data);
 $form->run();
 
