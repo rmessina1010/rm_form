@@ -161,15 +161,20 @@
 			return $form_html;
 		}
 		
-		function retrieve_var($field){
- 			return isset($this->methodVars[$field]) ? $this->methodVars[$field] : null ;
+		function retrieve_var($field, $path='', $del='/'){
+			if (!isset($this->methodVars[$field])){ return null;}
+			$value = $this->methodVars[$field];
+			$path = strlen(trim($path)) > 0 ? explode($del, $path) : array();
+			for ($i=0, $l= count($path); $i < $l; $i++){ $value = $value[$path[$i]]; }
+			return $value; 
 		}
 		
-		function get_value($field, $b='value="',$a='"'){
-			$val = $this->retrieve_var($field);
+		function get_value($field, $b='value="',$a='"' , $path='', $del='/'){
+			$val = $this->retrieve_var($field,$path,$del);
+			if (is_array($val)){ return $val;}
 			return  $val !== null ? $b.$val.$a : '';
 		}
-		
+				
 		function is_checked($field){
 			return $this->retrieve_var($field) !== null ?  'checked' : ''; 
 		}
