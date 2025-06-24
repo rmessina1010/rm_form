@@ -169,7 +169,7 @@
 			return $value; 
 		}
 		
-		function get_value($field, $b='value="',$a='"' , $path='', $del='/'){
+		function get_value($field, $path='', $del='/', $b='value="',$a='"'){
 			$val = $this->retrieve_var($field,$path,$del);
 			if (is_array($val)){ return $val;}
 			return  $val !== null ? $b.$val.$a : '';

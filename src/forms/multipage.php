@@ -90,10 +90,10 @@ TEXT;
         	<label>City: </label> 
         	<input type="text" name="Pass" id="Pass" placeholder="Password" {$this->get_value('Pass')} />
         </div>
-        {$this->report('Opps', 'div')}
+        {$this->report('Opps', '<div class="error">', '</div>')}
         <div>
 	        <label>State: </label>
-	        <select name ="selectme"> {$state_o($this->get_value('selectme','',''))}</select>
+	        <select name ="selectme"> {$state_o($this->retrieve_var('selectme'))}</select>
 	    </div>
 	    {$this->navigation_b()}
         <div><input type="checkbox" id="check" name="check" {$this->is_checked('check')}> <span>Remember me</span></div>

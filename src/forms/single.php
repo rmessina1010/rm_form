@@ -2,6 +2,7 @@
 	include_once 'shared_foos/foos.php';
 	class otherForm extends RM_form{
 	public 	$pages 		= 'form_instance';
+	public 	$do_array 	= false;
 	protected $with_sub = 'Log In Here';
 
 	function validate(){
@@ -19,13 +20,21 @@
 	 	$resub =  $this->is_sub ? '<h2>You Have Submitted the form</h2>' : '';
 	 	$valid =  $this->is_sub?  "<p>The Data is:". ($this->is_valid ? 'Valid' : 'Invalid')."</p>" :'';
 	 	$processed =  $this->is_sub ? '<h3> '.($this->is_processed ? 'The form was processed successfully' : 'Attempt to process failed'.(!$this->is_valid ? ' due to invalid data':'').'!').'</h3>' : '';
-	 	$b = $c = '';
+	 	$b = $c =  $d= '';
 		for ($i=1; $i<5; $i++){
 	 		$b.="<lable>for input-$i</label><input id=\"input$i\" name=\"input$i\" {$this->get_value('input'.$i)}/>".$this->report('input'.$i)."<br>\n";
 		}
 		for ($i=1; $i<6; $i++){
 	 		$c.="<option value=\"val$i\" {$this->is_selected('selectme', 'val'.$i)}/>value of $i</option>\n";
 		}
+		if ($this->do_array){
+			$d = '<hr/> <div>';
+			for ($i=1; $i<7; $i++){
+		 		$b.="<lable>CHOICE-$i</label><input id=\"choice$i\" name=\"choice['depth][]\" {$this->get_value('choice' )}/><br>\n";
+			}
+			$d.= '</div>';
+		}
+		
 		return <<<TEXT
 		{$this->navigation_h()}
 		$resub
@@ -43,6 +52,7 @@
         <div>
         $b
         </div>
+        $d
         <div>
 	        <label>A Dropdown</label>
 	        <select name ="selectme">
