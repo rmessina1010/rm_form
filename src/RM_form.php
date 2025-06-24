@@ -68,13 +68,7 @@
 			}
   		}
   		
-		protected function setErr($field, $message, $condition_state = true, $delim=' '){
-			if ($condition_state === false ){ return; }
-			if (is_string($condition_state)){ $delim = $condition_state; }
-			$this->errs[$field] =  isset($this->errs[$field]) ?  $this->errs[$field].$delim.$message."\n": $message;
-			if (!$this->kp_inv_data && isset($this->methodVars[$field])){ $this->set_methodVar($field, '');}
-		}
-
+ 
 		function form_body_preprocess($html){
 			if (method_exists($this, $html)) { return $this->{$html}();}
 			if (isset($this->{$html}) && is_string($this->{$html})) {  return $this->{$html}; }
@@ -235,15 +229,21 @@
 	  		else if (isset($_SESSION[$this->form_name]['data'])){ $this->load_data($this->pages);}
 	  	}
 	  	
-	  	protected function report($field, $bef="<span class=\"error\">", $aft="</span>", $del= false, $gbef="", $gaft=""){
+		protected function setErr($field, $message, $condition_state = true, $resets=array()){
+			if ($condition_state === false ){ return; }
+			if (!isset($this->errs[$field])){ $this->errs[$field] = array(); }
+			$this->errs[$field][] = $message;
+			if (!$this->kp_inv_data) {
+				$resets[] = $field;
+				foreach ($resets as $reset){ 
+					if (isset($this->methodVars[$reset])) { $this->set_methodVar($reset, '');}
+				}
+			}
+		}
+
+	  	protected function report($field, $gbef="<span class=\"error\">", $gaft="</span>", $bef="", $aft=""){
 			if (!isset($this->errs[$field])) { return ''; }
-			if (is_string($del)){
-				$report = explode($del,$this->errs[$field]);
-				$errors = $gbef.$bef.implode($aft.$bef,$report).$aft.$gaft;
-			}
-			else{ 
-				$errors = $bef.$this->errs[$field].$aft; 
-			}
+			$errors = $gbef.$bef.implode($aft.$bef,$this->errs[$field]).$aft.$gaft;
 			return   $errors;
 		}
 	  	

@@ -12,9 +12,9 @@
 	 	  	$this->setErr('Opps', 'hacker!!!', ($this->methodVars['Pass'] != $this->methodVars['Uname']));
 	 	  	if ($current_pg == 'formit'){
 		 	  	for ($i=1; $i<5; $i++){
-			 	   $this->setErr('input'.$i, 'you are missing data at input'.$i, (!$this->methodVars['input'.$i]));
+			 	   $this->setErr('input'.$i, 'you are missing data at input'.$i.'. ', (!$this->methodVars['input'.$i]));
 		 		}
-		 	  	$this->setErr('input2', 'must equal 2', ($this->methodVars['input2'] != '2' ),'; ');
+		 	  	$this->setErr('input2', 'must equal 2. ', ($this->methodVars['input2'] != '2' ));
 		 	}	
 		}
 	}
