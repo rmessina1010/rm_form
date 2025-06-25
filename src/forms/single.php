@@ -9,10 +9,22 @@
 	 		$this->setErr('Pass', 'A password is required', (!$this->methodVars['Pass']));
 			$this->setErr('Uname', 'A user name is required', (!$this->methodVars['Uname'])); 
 	 	  	$this->setErr('Opps', 'hacker!!!', ($this->methodVars['Pass'] != $this->methodVars['Uname']));
-	 	  	for ($i=1; $i<5; $i++){
-		 	   $this->setErr('input'.$i, 'you are missing data at input'.$i.'. ', (!$this->methodVars['input'.$i]));
-	 		}
-	 	  	$this->setErr('input2', 'must equal 2. ', ($this->methodVars['input2'] != '2' ));
+	 	  	if (!$this->do_array){
+		 	  	for ($i=1; $i<5; $i++){
+			 	   $this->setErr('input'.$i, 'you are missing data at input'.$i.'. ', (!$this->methodVars['input'.$i]));
+		 		}
+		 	  	$this->setErr('input2', 'must equal 2. ', ($this->methodVars['input2'] != '2' ));
+	 	  	}else{
+		 	  	$t = $this->methodVars['choice']['depth'];
+		 	  	for ($i=2, $l= count($t); $i< $l; $i++){
+			 	   $test = ($t[$i]<$t[$i-1] || trim($t[$i]) === '' || is_nan($t[$i]));
+			 	   if ($test){ 
+				 	   $this->setErr('choice', 'CHOICEs must be incremental.', true);
+				 	   for ($j=$i; $j< $l; $j++){ $this->methodVars['choice']['depth'][$j] ='';}
+				 	   break; 
+				 	}
+		 		}
+	 	  	}
  	}
  	
 
@@ -21,20 +33,23 @@
 	 	$valid =  $this->is_sub?  "<p>The Data is:". ($this->is_valid ? 'Valid' : 'Invalid')."</p>" :'';
 	 	$processed =  $this->is_sub ? '<h3> '.($this->is_processed ? 'The form was processed successfully' : 'Attempt to process failed'.(!$this->is_valid ? ' due to invalid data':'').'!').'</h3>' : '';
 	 	$b = $c =  $d= '';
-		for ($i=1; $i<5; $i++){
+		if ($this->do_array){
+			$d = '<div>';
+			for ($i=1; $i<7; $i++){
+		 		$b.="<lable>CHOICE-$i</label><input id=\"choice$i\" name=\"choice[depth][$i]\" {$this->get_value('choice','depth/'.$i)}/><br>\n";
+			}
+			$d.= $this->report('choice').'</div>';
+		}
+		else{
+			for ($i=1; $i<5; $i++){
 	 		$b.="<lable>for input-$i</label><input id=\"input$i\" name=\"input$i\" {$this->get_value('input'.$i)}/>".$this->report('input'.$i)."<br>\n";
+		}
+
 		}
 		for ($i=1; $i<6; $i++){
 	 		$c.="<option value=\"val$i\" {$this->is_selected('selectme', 'val'.$i)}/>value of $i</option>\n";
 		}
-		if ($this->do_array){
-			$d = '<hr/> <div>';
-			for ($i=1; $i<7; $i++){
-		 		$b.="<lable>CHOICE-$i</label><input id=\"choice$i\" name=\"choice['depth][]\" {$this->get_value('choice' )}/><br>\n";
-			}
-			$d.= '</div>';
-		}
-		
+				
 		return <<<TEXT
 		{$this->navigation_h()}
 		$resub

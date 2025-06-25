@@ -241,7 +241,7 @@
 			if (!$this->kp_inv_data) {
 				$resets[] = $field;
 				foreach ($resets as $reset){ 
-					if (isset($this->methodVars[$reset])) { $this->set_methodVar($reset, '');}
+					if (isset($this->methodVars[$reset]) && is_scalar($this->methodVars[$reset])) { $this->set_methodVar($reset, '');}
 				}
 			}
 		}
@@ -318,7 +318,7 @@
 // check single page functionality -- done
 // generate a submit button  -- done
 // add form identifier field (user entered/default null) [re check, and add logic] --done 
-// multi resets
+// multi resets  (???)
 // multi-page vars(???)
 // checksub on construct (???)
 // clean up comments / output --done 

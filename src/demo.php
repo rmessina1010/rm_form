@@ -21,4 +21,8 @@ $form2->run();
 
 $form3 = new otherForm( 'test3', array('mtd'=>'get' ,'idtfy'=>'form3' ));
 $form3->run();
+
+$form4 = new otherForm( 'test4', array('mtd'=>'get' ,'idtfy'=>'form4' ));
+$form4->do_array = true;
+$form4->run();
 ?>
