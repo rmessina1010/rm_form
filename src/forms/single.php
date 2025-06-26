@@ -61,7 +61,7 @@
         </div>     
         <div>
         	<label>Password: </label> 
-        	<input type="text" name="Pass" id="Pass" placeholder="Password" {$this->get_value('Pass')} />
+        	<input type="password" name="Pass" id="Pass" placeholder="Password" {$this->get_value('Pass')} />
         </div>
         {$this->report('Opps', '<div class="error">', '</div>')}
         <div>

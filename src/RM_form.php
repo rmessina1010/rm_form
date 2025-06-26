@@ -104,6 +104,10 @@
 			return true;
 		}
 		
+		function cleanup(){
+			unset($_SESSION[$this->form_name]);
+		}
+		
 		function tern($is_true,$a,$b){
 			return $is_true ? $a : $b;
 		}
@@ -286,6 +290,7 @@
 								$this->is_processed = $this->process();
 								if ($this->is_processed && $this->do_post) {
 									$this->post_process();
+									$this->cleanup();
  									if ($this->do_post === "only") { return;}
 								}
 							}
