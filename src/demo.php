@@ -25,10 +25,11 @@ $form3->run();
 $form4 = new otherForm( 'test4', array('mtd'=>'get' ,'idtfy'=>'form4' ));
 $form4->do_array = true;
 $form4->run();
-/*
-var_dump($form4->check_is_processed());
-if ($form4->check_is_processed()){ var_dump($form3->get_data()); }
-*/
-
-//var_dump($_SESSION);
+if (!$form4->check_fresh()){ echo "data stored in object:"; var_dump($form4->get_data());  }
+echo "process status [always false]:";
+var_dump($form4->check_processed());
+echo "fresh status:";
+var_dump($form4->check_fresh());
+echo "session status:";
+var_dump($_SESSION);
 ?>

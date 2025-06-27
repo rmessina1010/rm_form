@@ -16,7 +16,7 @@
 		 	  	$this->setErr('input2', 'must equal 2. ', ($this->methodVars['input2'] != '2' ));
 	 	  	}else{
 		 	  	$t = $this->methodVars['choice']['depth'];
-		 	  	for ($i=2, $l= count($t); $i< $l; $i++){
+		 	  	for ($i=2, $l= count($t)+1; $i< $l; $i++){
 			 	   $test = ($t[$i]<$t[$i-1] || trim($t[$i]) === '' || is_nan($t[$i]));
 			 	   if ($test){ 
 				 	   $this->setErr('choice', 'CHOICEs must be incremental.', true);

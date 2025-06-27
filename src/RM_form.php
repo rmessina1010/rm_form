@@ -19,6 +19,7 @@
 		protected $navs			= array();
 		protected $tg_index	= null;
 		protected $is_processed	= false;
+		protected $is_fresh		= true;
 		protected $sub 			= 'submit';
 		protected $with_sub		= null;
 		protected $errs 		= array();
@@ -27,7 +28,6 @@
 		protected $methodVars	= array();
 		protected $sub_html		= '';
 		protected $use_buffer	= true;
-		
 		
 		function __construct($name, $args = array(), $fill=null){
 			if (!headers_sent() && session_status() === PHP_SESSION_NONE) { session_start(); }
@@ -103,11 +103,7 @@
 		function process(){
 			return true;
 		}
-		
-		function cleanup(){
-			unset($_SESSION[$this->form_name]);
-		}
-		
+				
 		function tern($is_true,$a,$b){
 			return $is_true ? $a : $b;
 		}
@@ -147,7 +143,7 @@
  			$this->methodVars[$field] = $val;
     	}
 	
-   		private function re_ready_form(){
+   		private function cleanup(){
 	   		unset($_SESSION[$this->form_name]);
 	   		$this->on_pg =0;
 	   		$this->tg_index=0;
@@ -161,8 +157,7 @@
 			$form_html .= $this->form_body();
 			if (is_string($this->form_idtfy)){ $form_html.='<input type="hidden" name="'.$this->form_idtfy.'" value="'.$this->form_idtfy.'"/>'; }
 			$form_html .= "\n</form>\n";
-			if ($this->is_processed){ $this->re_ready_form(); }
-			return $form_html;
+ 			return $form_html;
 		}
 		
 		function retrieve_var($field, $path='', $del='/'){
@@ -231,6 +226,10 @@
 			}
   		}
   		
+  		function check_fresh(){ return $this->is_fresh; }
+  		
+  		function check_processed(){ return $this->is_processed; }
+  		
   		function check_loaded(){
 	  		if (is_array($this->pages)){
 	  		 	if (isset($_SESSION[$this->form_name]['data'][$this->pages[$this->on_pg]])){ $this->load_data($this->pages[$this->on_pg]);}
@@ -257,6 +256,7 @@
 		}
 	  	
  	  	function get_data( $flat = false ){
+	 	  	return $this->form_data;
 		  	if (!is_array($this->pages) || !$flat ) {return $this->form_data; }
 		  	$data  = array(); 
 		  	foreach ($this->form_data as $page) { $data = array_merge($data, $page); }
@@ -287,11 +287,14 @@
 							$this->persist_data();
 							if ($this->is_sub){
 								$this->form_data = $_SESSION[$this->form_name]['data'];
+								echo "<b>data</b>";
+								var_dump($this->form_data);
 								$this->is_processed = $this->process();
+								if($this->is_processed) { $this->is_fresh =  false ;}
 								if ($this->is_processed && $this->do_post) {
 									$this->post_process();
 									$this->cleanup();
- 									if ($this->do_post === "only") { return;}
+ 									if ($this->do_post === "only") { return; }
 								}
 							}
 							$this->navigate();
