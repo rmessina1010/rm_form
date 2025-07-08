@@ -144,12 +144,13 @@
     	}
 	
    		private function cleanup(){
-	   		unset($_SESSION[$this->form_name]);
-	   		$this->on_pg =0;
+ 	   		$this->on_pg =0;
 	   		$this->tg_index=0;
 	   		$this->is_processed = false;
 	   		$this->is_sub = false;
 	   		$this->is_nav = false;
+	   		$this->methodVars=array();
+   		}
    		}
    		
 		function generate(){
