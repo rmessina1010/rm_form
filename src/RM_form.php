@@ -151,7 +151,6 @@
 	   		$this->is_nav = false;
 	   		$this->methodVars=array();
    		}
-   		}
    		
 		function generate(){
 			$form_html  = "<form".$this->form_attrs().">\n";
@@ -193,6 +192,13 @@
 			$full =  array_key_exists($active, $GLOBALS['_'.$this->method]) ? $GLOBALS['_'.$this->method][$active] : $this->on_pg;
 			return explode('/', $full);
 		}
+
+		protected function persist_data(){
+			if ( is_array($this->pages)){
+				$_SESSION[$this->form_name]['data'][$this->pages[$_SESSION[$this->form_name]['current_index']]] = $this->methodVars;
+			}
+			else{ $_SESSION[$this->form_name]['data']  = $this->methodVars; }
+ 		}
 		
 		protected function navigate($is_fwd = true){
 		    if ($is_fwd) { $this->persist_data();}
@@ -203,14 +209,7 @@
 			$_SESSION[$this->form_name]['current_index'] = $this->on_pg;
 			$this->load_data(is_array($this->pages) ? $this->pages[$this->on_pg] : $this->pages);
 		}
-		
-		protected function persist_data(){
-			if ( is_array($this->pages)){
-				$_SESSION[$this->form_name]['data'][$this->pages[$_SESSION[$this->form_name]['current_index']]] = $this->methodVars;
-			}
-			else{ $_SESSION[$this->form_name]['data']  = $this->methodVars; }
- 		}
- 		
+
 		protected function load_data($pg_name){
 			$this->methodVars =  array();
 			if (is_array($this->pages)){
